@@ -22,6 +22,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String _actualText = "";
+
+  void setText(text) {
+    setState(() {
+      _actualText = text;
+    });
+  }
 
   @override
   void initState() {
@@ -38,43 +45,61 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.navigation_rounded),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-        ]),
+        appBar: AppBar(
+            backgroundColor: Colors.pink,
+            title: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: TextField(
+                onChanged: (value) {
+                  print('Input: $value');
+                  setText(value);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white24,
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.navigation_rounded),
+                tooltip: 'Geolocation',
+                onPressed: () {
+                  setText('Geolocation');
+                },
+              ),
+            ]),
         body: TabBarView(
           controller: _tabController,
-          children: [CurrentlyTab(), TodayTab(), WeeklyTab()],
+          children: [
+            CurrentlyTab(
+              title: 'CUrrently',
+              location: _actualText,
+            ),
+            CurrentlyTab(
+              title: 'Today',
+              location: _actualText,
+            ),
+            CurrentlyTab(
+              title: 'Weekly',
+              location: _actualText,
+            )
+          ],
         ),
         bottomNavigationBar: BottomAppBar(
           child: TabBar(
             controller: _tabController,
-            tabs: [
-              Tab(icon: Icon(Icons.home), text: 'Home'),
-              Tab(icon: Icon(Icons.star), text: 'Favorites'),
-              Tab(icon: Icon(Icons.person), text: 'Profile'),
+            tabs: const [
+              Tab(icon: Icon(Icons.watch), text: 'Currently'),
+              Tab(icon: Icon(Icons.calendar_today), text: 'Today'),
+              Tab(icon: Icon(Icons.next_week), text: 'Weekly'),
             ],
           ),
         ));
-  }
-}
-
-class TodayTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Today'));
-  }
-}
-
-class WeeklyTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Weekly'));
   }
 }
