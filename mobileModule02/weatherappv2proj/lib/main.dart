@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:weatherappv2proj/currently.dart';
+import 'package:weatherappv2proj/model/city_model.dart';
+import 'package:weatherappv2proj/provider/city_provider.dart';
+import 'package:weatherappv2proj/service/city_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +29,33 @@ class _MyHomePageState extends State<MyHomePage>
   late TabController _tabController;
   String _actualText = "";
   bool _locationPermissionDenied = false;
+
+  final TextEditingController _controller = TextEditingController();
+  final CityService _cityService = CityService();
+  List<City> _cities = [];
+  FocusNode _searchFocusNode = FocusNode();
+  bool _isLoading = false;
+
+  void _searchCities(String query) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final cities = await _cityService.fetchCities(query);
+      setState(() {
+        _cities = cities;
+      });
+    } catch (e) {
+      setState(() {
+        _cities = [];
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   Future<Position> _getGeoLocationPosition() async {
     bool serviceEnabled;
@@ -83,21 +113,31 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController.dispose(); // Dispose of TabController
+    _controller.dispose(); // Dispose of TextEditingController
+    _searchFocusNode.dispose(); // Dispose of FocusNode
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink,
         title: Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           child: TextField(
+            controller: _controller,
+            focusNode: _searchFocusNode,
             onChanged: (value) {
               setText(value);
+              if (value.isNotEmpty) {
+                _searchCities(value);
+              } else {
+                setState(() {
+                  _cities = [];
+                });
+              }
             },
             decoration: InputDecoration(
               hintText: 'Search',
@@ -127,26 +167,31 @@ class _MyHomePageState extends State<MyHomePage>
           ),
         ],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          CurrentlyTab(
-            title: 'Currentlyyyyyy',
-            location: _actualText,
-            permited: !_locationPermissionDenied,
+      body: Column(children: [
+        _buildCitiesList(),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              CurrentlyTab(
+                title: 'Currently',
+                location: _actualText,
+                permited: !_locationPermissionDenied,
+              ),
+              CurrentlyTab(
+                title: 'Today',
+                location: _actualText,
+                permited: !_locationPermissionDenied,
+              ),
+              CurrentlyTab(
+                title: 'Weekly',
+                location: _actualText,
+                permited: !_locationPermissionDenied,
+              )
+            ],
           ),
-          CurrentlyTab(
-            title: 'Today',
-            location: _actualText,
-            permited: !_locationPermissionDenied,
-          ),
-          CurrentlyTab(
-            title: 'Weekly',
-            location: _actualText,
-            permited: !_locationPermissionDenied,
-          )
-        ],
-      ),
+        )
+      ]),
       bottomNavigationBar: BottomAppBar(
         child: TabBar(
           controller: _tabController,
@@ -158,5 +203,25 @@ class _MyHomePageState extends State<MyHomePage>
         ),
       ),
     );
+  }
+
+  Widget _buildCitiesList() {
+    return _searchFocusNode.hasFocus
+        ? Expanded(
+            child: ListView.builder(
+              itemCount: _cities.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                      _cities[index].name), // Replace with actual city name
+                  onTap: () {
+                    // Action when the user taps on a city
+                    // Example: Navigate to another page or perform a specific action
+                  },
+                );
+              },
+            ),
+          )
+        : SizedBox.shrink(); // Hide the list when text field is not focused
   }
 }

@@ -1,26 +1,23 @@
 name: weatherappv2proj
-description: A new Flutter project.
-
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-version: 1.0.0+1
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"  # Adjusted SDK constraint to latest stable Dart/Flutter version
+  sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  geolocator: ^12.0.0  # Updated to the latest compatible version
+  geolocator: ^10.0.1
+  geocoding: ^2.0.4
   permission_handler: ^10.2.0
-  cupertino_icons: ^1.0.0
+  http: ^0.13.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
