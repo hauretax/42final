@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:weatherappv2proj/curent.dart';
 import 'package:weatherappv2proj/currently.dart';
 import 'package:weatherappv2proj/model/city_model.dart';
-import 'package:weatherappv2proj/provider/city_provider.dart';
+import 'package:weatherappv2proj/model/weather_model.dart';
 import 'package:weatherappv2proj/service/city_service.dart';
+import 'package:weatherappv2proj/service/weather_service.dart';
+import 'package:weatherappv2proj/utils/printInColor.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,15 +35,13 @@ class _MyHomePageState extends State<MyHomePage>
 
   final TextEditingController _controller = TextEditingController();
   final CityService _cityService = CityService();
+  final WeatherService _weatherService = WeatherService();
   List<City> _cities = [];
+  Weather? _weather = null;
+  City? _city = null;
   FocusNode _searchFocusNode = FocusNode();
-  bool _isLoading = false;
 
   void _searchCities(String query) async {
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       final cities = await _cityService.fetchCities(query);
       setState(() {
@@ -51,10 +52,24 @@ class _MyHomePageState extends State<MyHomePage>
         _cities = [];
       });
     }
+  }
 
+  void setCity(City city) {
     setState(() {
-      _isLoading = false;
+      _city = city;
     });
+  }
+
+  void _searchWeather(double latitude, double longitude) async {
+    try {
+      final weather = await _weatherService.fetchWeather(latitude, longitude);
+      setState(() {
+        _weather = weather;
+      });
+    } catch (e) {
+      printBrightRed("Error: $e");
+      _weather = null;
+    }
   }
 
   Future<Position> _getGeoLocationPosition() async {
@@ -129,6 +144,15 @@ class _MyHomePageState extends State<MyHomePage>
           child: TextField(
             controller: _controller,
             focusNode: _searchFocusNode,
+            onSubmitted: (value) async {
+              final cities = await _cityService.fetchCities(value);
+              setCity(cities[0]);
+              _searchWeather(cities[0].latitude, cities[0].longitude);
+              _searchFocusNode.unfocus();
+              setState(() {
+                _cities = [];
+              });
+            },
             onChanged: (value) {
               setText(value);
               if (value.isNotEmpty) {
@@ -157,9 +181,7 @@ class _MyHomePageState extends State<MyHomePage>
             onPressed: () async {
               try {
                 Position position = await _getGeoLocationPosition();
-                setText(position.latitude.toString() +
-                    ',' +
-                    position.longitude.toString());
+                setText('${position.latitude},${position.longitude}');
               } catch (e) {
                 setText(e.toString());
               }
@@ -168,16 +190,12 @@ class _MyHomePageState extends State<MyHomePage>
         ],
       ),
       body: Column(children: [
-        _buildCitiesList(),
+        if (_cities.isNotEmpty) _buildCitiesList(),
         Expanded(
           child: TabBarView(
             controller: _tabController,
             children: [
-              CurrentlyTab(
-                title: 'Currently',
-                location: _actualText,
-                permited: !_locationPermissionDenied,
-              ),
+              CurrentTab(permited: true, weather: _weather, city: _city),
               CurrentlyTab(
                 title: 'Today',
                 location: _actualText,
@@ -206,22 +224,24 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Widget _buildCitiesList() {
-    return _searchFocusNode.hasFocus
-        ? Expanded(
-            child: ListView.builder(
-              itemCount: _cities.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                      _cities[index].name), // Replace with actual city name
-                  onTap: () {
-                    // Action when the user taps on a city
-                    // Example: Navigate to another page or perform a specific action
-                  },
-                );
-              },
-            ),
-          )
-        : SizedBox.shrink(); // Hide the list when text field is not focused
+    return Expanded(
+        child: ListView.builder(
+      itemCount: _cities.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(_cities[index].name),
+          subtitle:
+              Text('${_cities[index].country} - ${_cities[index].region}'),
+          onTap: () {
+            _searchWeather(_cities[index].latitude, _cities[index].longitude);
+            setCity(_cities[index]);
+            _searchFocusNode.unfocus();
+            setState(() {
+              _cities = [];
+            });
+          },
+        );
+      },
+    ));
   }
 }

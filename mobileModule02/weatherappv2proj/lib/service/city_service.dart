@@ -12,7 +12,8 @@ class CityService {
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       List<dynamic> results = data['results'];
-      return results.map((item) => City.fromJson(item)).toList();
+      List<City> cities = results.map((item) => City.fromJson(item)).toList();
+      return cities;
     } else {
       throw Exception('Failed to load cities');
     }
