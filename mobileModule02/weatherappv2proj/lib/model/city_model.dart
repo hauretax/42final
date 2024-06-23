@@ -1,3 +1,5 @@
+import 'package:geocoding/geocoding.dart';
+
 class City {
   final String name;
   final String region;
@@ -19,6 +21,17 @@ class City {
       country: json['country'],
       latitude: json['latitude'],
       longitude: json['longitude'],
+    );
+  }
+
+  factory City.fromPlacemarks(
+      Placemark placemark, double latitude, double longitude) {
+    return City(
+      name: placemark.name!,
+      region: placemark.administrativeArea!,
+      country: placemark.country!,
+      latitude: latitude,
+      longitude: longitude,
     );
   }
 }

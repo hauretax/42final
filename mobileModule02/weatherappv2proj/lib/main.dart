@@ -2,44 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:weatherappv2proj/curent.dart';
-import 'package:weatherappv2proj/currently.dart';
 import 'package:weatherappv2proj/model/city_model.dart';
 import 'package:weatherappv2proj/model/weather_model.dart';
 import 'package:weatherappv2proj/service/city_service.dart';
 import 'package:weatherappv2proj/service/weather_service.dart';
-import 'package:weatherappv2proj/utils/printInColor.dart';
+import 'package:weatherappv2proj/today.dart';
+import 'package:weatherappv2proj/week.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _actualText = "";
-  bool _locationPermissionDenied = false;
+  String _error = '';
 
   final TextEditingController _controller = TextEditingController();
   final CityService _cityService = CityService();
   final WeatherService _weatherService = WeatherService();
+  final FocusNode _searchFocusNode = FocusNode();
   List<City> _cities = [];
-  Weather? _weather = null;
-  City? _city = null;
-  FocusNode _searchFocusNode = FocusNode();
+  Weather? _weather;
+  HourlyWeather? _hourlyWeather;
+  WeekWeather? _weekWeather;
+  City? _city;
 
   void _searchCities(String query) async {
     try {
@@ -63,33 +69,43 @@ class _MyHomePageState extends State<MyHomePage>
   void _searchWeather(double latitude, double longitude) async {
     try {
       final weather = await _weatherService.fetchWeather(latitude, longitude);
+      _setError('');
       setState(() {
-        _weather = weather;
+        _weather = weather['weather'];
+        _hourlyWeather = weather['hourlyWeather'];
+        _weekWeather = weather['weekWeather'];
       });
     } catch (e) {
-      printBrightRed("Error: $e");
+      _setError(
+          'The sercie or connection is lost, please check you internet connection or try again later');
       _weather = null;
     }
+  }
+
+  void _setError(String error) {
+    setState(() {
+      _error = error;
+    });
   }
 
   Future<Position> _getGeoLocationPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
-
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings();
       return Future.error('Location service Not Enabled');
     }
-
     // Check and request location permission using permission_handler
     var status = await Permission.location.status;
+
     if (!status.isGranted) {
       status = await Permission.location.request();
       if (!status.isGranted) {
         setState(() {
-          _locationPermissionDenied = true;
+          _error =
+              'Location permissions are permanently denied, please open settings to change it';
         });
         return Future.error('Location permission denied');
       }
@@ -98,10 +114,9 @@ class _MyHomePageState extends State<MyHomePage>
     // Check if the permission is denied forever
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
-      setText(
-          'Location permissions are permanently denied, please open settings to change it');
       setState(() {
-        _locationPermissionDenied = true;
+        _error =
+            'Location permissions are permanently denied, please open settings to change it';
       });
       return Future.error(
         'Location permission denied forever, we cannot access',
@@ -112,12 +127,6 @@ class _MyHomePageState extends State<MyHomePage>
     return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.low,
     );
-  }
-
-  void setText(text) {
-    setState(() {
-      _actualText = text;
-    });
   }
 
   @override
@@ -145,16 +154,21 @@ class _MyHomePageState extends State<MyHomePage>
             controller: _controller,
             focusNode: _searchFocusNode,
             onSubmitted: (value) async {
-              final cities = await _cityService.fetchCities(value);
-              setCity(cities[0]);
-              _searchWeather(cities[0].latitude, cities[0].longitude);
-              _searchFocusNode.unfocus();
-              setState(() {
-                _cities = [];
-              });
+              try {
+                final cities = await _cityService.fetchCities(value);
+                _setError('');
+                setCity(cities[0]);
+                _searchWeather(cities[0].latitude, cities[0].longitude);
+                _searchFocusNode.unfocus();
+                setState(() {
+                  _cities = [];
+                });
+              } catch (e) {
+                _setError(
+                    'could not find any results for supplied address or coordinates');
+              }
             },
             onChanged: (value) {
-              setText(value);
               if (value.isNotEmpty) {
                 _searchCities(value);
               } else {
@@ -181,9 +195,16 @@ class _MyHomePageState extends State<MyHomePage>
             onPressed: () async {
               try {
                 Position position = await _getGeoLocationPosition();
-                setText('${position.latitude},${position.longitude}');
+                _cityService
+                    .fetchCitiesByCoordinates(
+                        position.latitude, position.longitude)
+                    .then((value) {
+                  setCity(value);
+                });
+                _searchWeather(position.latitude, position.longitude);
               } catch (e) {
-                setText(e.toString());
+                _setError(
+                    'could not find any results for supplied address or coordinates');
               }
             },
           ),
@@ -195,16 +216,16 @@ class _MyHomePageState extends State<MyHomePage>
           child: TabBarView(
             controller: _tabController,
             children: [
-              CurrentTab(permited: true, weather: _weather, city: _city),
-              CurrentlyTab(
-                title: 'Today',
-                location: _actualText,
-                permited: !_locationPermissionDenied,
+              CurrentTab(error: _error, weather: _weather, city: _city),
+              TodayTab(
+                error: _error,
+                hourlyWeather: _hourlyWeather,
+                city: _city,
               ),
-              CurrentlyTab(
-                title: 'Weekly',
-                location: _actualText,
-                permited: !_locationPermissionDenied,
+              WeekTab(
+                error: _error,
+                weekWeather: _weekWeather,
+                city: _city,
               )
             ],
           ),

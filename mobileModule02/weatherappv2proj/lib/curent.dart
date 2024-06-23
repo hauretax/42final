@@ -5,8 +5,8 @@ import 'package:weatherappv2proj/model/weather_model.dart';
 class CurrentTab extends StatefulWidget {
   final Weather? weather;
   final City? city;
-  final bool permited;
-  const CurrentTab({key, this.weather, this.city, required this.permited});
+  final String error;
+  const CurrentTab({super.key, this.weather, this.city, required this.error});
 
   @override
   State<CurrentTab> createState() => _CurrentTab();
@@ -15,12 +15,12 @@ class CurrentTab extends StatefulWidget {
 class _CurrentTab extends State<CurrentTab> {
   @override
   Widget build(BuildContext context) {
-    if (!widget.permited) {
+    if (widget.error != '') {
       return Container(
         color: Colors.red[100],
         child: Center(
           child: Text(
-            'Location permissions are permanently denied, please open settings to change it',
+            widget.error,
             style: TextStyle(color: Colors.red[900], fontSize: 16),
             textAlign: TextAlign.center,
           ),
@@ -34,12 +34,12 @@ class _CurrentTab extends State<CurrentTab> {
               child: Column(children: <Widget>[
             Text(
               widget.city!.name,
-              style: const TextStyle(fontSize: 60),
+              style: const TextStyle(fontSize: 30),
             ),
             Text(
               "${widget.city!.country} - ${widget.city!.region}",
               style: const TextStyle(
-                  fontSize: 20, color: Color.fromARGB(255, 71, 71, 71)),
+                  fontSize: 10, color: Color.fromARGB(255, 71, 71, 71)),
             ),
           ])),
           Expanded(
