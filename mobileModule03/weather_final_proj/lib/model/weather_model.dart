@@ -37,6 +37,7 @@ class HourlyWeather {
     int length = hourlyData['time']?.length ?? 0;
     for (int i = 0; i < length; i++) {
       final time = DateTime.parse(hourlyData['time'][i]);
+
       transformedList.add({
         'time':
             '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',

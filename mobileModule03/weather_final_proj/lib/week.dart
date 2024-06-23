@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_final_proj/model/city_model.dart';
 import 'package:weather_final_proj/model/weather_model.dart';
@@ -29,21 +30,45 @@ class _WeekTab extends State<WeekTab> {
     }
     if (widget.city != null && widget.weekWeather != null) {
       return Column(children: <Widget>[
+        Column(children: <Widget>[
+          Text(
+            widget.city!.name,
+            style: const TextStyle(fontSize: 30),
+          ),
+          Text(
+            "${widget.city!.country} - ${widget.city!.region}",
+            style: const TextStyle(
+                fontSize: 10, color: Color.fromARGB(255, 71, 71, 71)),
+          ),
+        ]),
         Flexible(
-            fit: FlexFit.tight,
-            child: Column(children: <Widget>[
-              Text(
-                widget.city!.name,
-                style: const TextStyle(fontSize: 30),
+          child: LineChart(
+            LineChartData(lineBarsData: [
+              LineChartBarData(
+                spots: widget.weekWeather!.weather
+                    .map((weather) => FlSpot(
+                        double.parse(weather['time'].split('-')[2]),
+                        weather['temperature_2m_max']))
+                    .toList(),
+                isCurved: true,
+                color: Colors.red,
               ),
-              Text(
-                "${widget.city!.country} - ${widget.city!.region}",
-                style: const TextStyle(
-                    fontSize: 10, color: Color.fromARGB(255, 71, 71, 71)),
-              ),
-            ])),
+              LineChartBarData(
+                spots: widget.weekWeather!.weather
+                    .map((weather) => FlSpot(
+                        double.parse(weather['time'].split('-')[2]),
+                        weather['temperature_2m_min']))
+                    .toList(),
+                isCurved: true,
+                color: Colors.blue,
+              )
+            ]),
+          ),
+        ),
         Flexible(
+          fit: FlexFit.tight,
             child: ListView.builder(
+          scrollDirection: Axis.horizontal,
           itemCount: widget.weekWeather!.weather.length,
           itemBuilder: (context, index) {
             var weather = widget.weekWeather!.weather[index];
@@ -56,15 +81,15 @@ class _WeekTab extends State<WeekTab> {
                     children: <Widget>[
                       Text(
                         weather['time'],
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 20),
                       ),
                       Text(
                         "${weather['temperature_2m_min']} - ${weather['temperature_2m_max']} °C",
                         style: const TextStyle(fontSize: 20),
                       ),
                       Text(
-                        " ${weather['weather_code']}",
-                        style: const TextStyle(fontSize: 20),
+                        "${weather['weatherEmoji']}",
+                        style: const TextStyle(fontSize: 50),
                       ),
                     ],
                   ),

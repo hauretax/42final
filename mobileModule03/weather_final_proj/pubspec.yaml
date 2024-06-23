@@ -13,6 +13,7 @@ dependencies:
   geocoding: ^2.0.4
   permission_handler: ^10.2.0
   http: ^0.13.3
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:

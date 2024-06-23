@@ -7,6 +7,7 @@ import 'package:weather_final_proj/model/city_model.dart';
 import 'package:weather_final_proj/model/weather_model.dart';
 import 'package:weather_final_proj/service/weather_service.dart';
 import 'package:weather_final_proj/today.dart';
+import 'package:weather_final_proj/utils/print_in_color.dart';
 import 'package:weather_final_proj/week.dart';
 
 void main() {
@@ -76,8 +77,9 @@ class _MyHomePageState extends State<MyHomePage>
         _weekWeather = weather['weekWeather'];
       });
     } catch (e) {
+      printRed(e.toString());
       _setError(
-          'The sercie or connection is lost, please check you internet connection or try again later');
+          'The service or connection is lost, please check you internet connection or try again later');
       _weather = null;
     }
   }
