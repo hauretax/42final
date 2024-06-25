@@ -212,24 +212,25 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       body: Column(children: [
         if (_cities.isNotEmpty) _buildCitiesList(),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              CurrentTab(error: _error, weather: _weather, city: _city),
-              TodayTab(
-                error: _error,
-                hourlyWeather: _hourlyWeather,
-                city: _city,
-              ),
-              WeekTab(
-                error: _error,
-                weekWeather: _weekWeather,
-                city: _city,
-              )
-            ],
-          ),
-        )
+        if (_cities.isEmpty)
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                CurrentTab(error: _error, weather: _weather, city: _city),
+                TodayTab(
+                  error: _error,
+                  hourlyWeather: _hourlyWeather,
+                  city: _city,
+                ),
+                WeekTab(
+                  error: _error,
+                  weekWeather: _weekWeather,
+                  city: _city,
+                )
+              ],
+            ),
+          )
       ]),
       bottomNavigationBar: BottomAppBar(
         child: TabBar(
