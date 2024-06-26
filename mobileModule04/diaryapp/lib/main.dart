@@ -1,11 +1,14 @@
 import 'package:diaryapp/screens/login.dart';
 import 'package:diaryapp/screens/profile.dart';
+import 'package:diaryapp/utils/mongodb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
 
 const appScheme = 'flutterdiaryapp';
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MongoDatabase.connect();
   await dotenv.load();
 
   runApp(MyApp());
@@ -28,7 +31,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
     final auth0Domain = dotenv.env['AUTH0_DOMAIN']!;
     final auth0ClientId = dotenv.env['AUTH0_CLIENT_ID']!;
     auth0 = Auth0(auth0Domain, auth0ClientId);

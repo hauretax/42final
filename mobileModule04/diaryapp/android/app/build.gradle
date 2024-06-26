@@ -42,6 +42,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+         manifestPlaceholders += [auth0Domain: "dev-ymzabtwnwyge44vb.us.auth0.com", auth0Scheme: "flutterdiaryapp"] // 👈 New code
     }
 
     buildTypes {
