@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
-
 class Entry {
   final int? id;
   final DateTime date;
@@ -26,7 +24,7 @@ class Entry {
       'icon': icon,
       'text': text,
       'title': title,
-      'date': date,
+      'date': date.toString(),
     };
   }
 

@@ -18,19 +18,21 @@ class EntryBuilder extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final entry = snapshot.data![index];
-              return _buildEntryCard(entry, context);
-            },
-          ),
+          child: snapshot.data != null
+              ? ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final entry = snapshot.data![index];
+                    return _buildEntryCard(entry, context);
+                  },
+                )
+              : const Text('Ajouter de nouvelle entrez'),
         );
       },
     );

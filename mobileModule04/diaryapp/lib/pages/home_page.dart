@@ -1,4 +1,4 @@
-import 'package:diaryapp/common_widgets/dog_builder.dart';
+import 'package:diaryapp/common_widgets/entry_builder.dart';
 import 'package:diaryapp/models/entry.dart';
 import 'package:diaryapp/pages/entry_form_page.dart';
 import 'package:diaryapp/services/database_service.dart';

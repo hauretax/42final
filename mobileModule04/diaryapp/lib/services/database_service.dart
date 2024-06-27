@@ -22,14 +22,20 @@ class DatabaseService {
     return await openDatabase(
       path,
       onCreate: _onCreate,
-      version: 1,
+      version: 3,
       onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
     );
   }
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE entrys(id INTEGER PRIMARY KEY, name TEXT)',
+      '''CREATE TABLE entrys(
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      usermail TEXT, 
+      icon TEXT, 
+      text TEXT, 
+      title TEXT, 
+      date TEXT)''',
     );
   }
 
