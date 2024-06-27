@@ -1,4 +1,4 @@
-import 'package:diaryapp/models/dog.dart';
+import 'package:diaryapp/models/entry.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -28,34 +28,34 @@ class DatabaseService {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-
     await db.execute(
-      'CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT)',
+      'CREATE TABLE entrys(id INTEGER PRIMARY KEY, name TEXT)',
     );
   }
 
-  Future<void> insertDog(Dog dog) async {
+  Future<void> insertEntry(Entry entry) async {
     final db = await _databaseService.database;
     await db.insert(
-      'dogs',
-      dog.toMap(),
+      'entrys',
+      entry.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<List<Dog>> dogs() async {
+  Future<List<Entry>> entrys() async {
     final db = await _databaseService.database;
-    final List<Map<String, dynamic>> maps = await db.query('dogs');
-    return List.generate(maps.length, (index) => Dog.fromMap(maps[index]));
+    final List<Map<String, dynamic>> maps = await db.query('entrys');
+    return List.generate(maps.length, (index) => Entry.fromMap(maps[index]));
   }
 
-  Future<void> updateDog(Dog dog) async {
+  Future<void> updateEntry(Entry entry) async {
     final db = await _databaseService.database;
-    await db.update('dogs', dog.toMap(), where: 'id = ?', whereArgs: [dog.id]);
+    await db.update('entrys', entry.toMap(),
+        where: 'id = ?', whereArgs: [entry.id]);
   }
 
-  Future<void> deleteDog(int id) async {
+  Future<void> deleteEntry(int id) async {
     final db = await _databaseService.database;
-    await db.delete('dogs', where: 'id = ?', whereArgs: [id]);
+    await db.delete('entrys', where: 'id = ?', whereArgs: [id]);
   }
 }

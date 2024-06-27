@@ -1,21 +1,20 @@
-import 'package:diaryapp/models/dog.dart';
+import 'package:diaryapp/models/entry.dart';
 import 'package:flutter/material.dart';
 
-class DogBuilder extends StatelessWidget {
-  const DogBuilder({
+class EntryBuilder extends StatelessWidget {
+  const EntryBuilder({
     Key? key,
     required this.future,
     required this.onEdit,
     required this.onDelete,
   }) : super(key: key);
-  final Future<List<Dog>> future;
-  final Function(Dog) onEdit;
-  final Function(Dog) onDelete;
-
+  final Future<List<Entry>> future;
+  final Function(Entry) onEdit;
+  final Function(Entry) onDelete;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Dog>>(
+    return FutureBuilder<List<Entry>>(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -28,8 +27,8 @@ class DogBuilder extends StatelessWidget {
           child: ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              final dog = snapshot.data![index];
-              return _buildDogCard(dog, context);
+              final entry = snapshot.data![index];
+              return _buildEntryCard(entry, context);
             },
           ),
         );
@@ -37,7 +36,7 @@ class DogBuilder extends StatelessWidget {
     );
   }
 
-  Widget _buildDogCard(Dog dog, BuildContext context) {
+  Widget _buildEntryCard(Entry entry, BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -51,8 +50,7 @@ class DogBuilder extends StatelessWidget {
                 color: Colors.grey[200],
               ),
               alignment: Alignment.center,
-              child: Icon(
-      Icons.favorite),
+              child: Icon(Icons.favorite),
             ),
             SizedBox(width: 20.0),
             Expanded(
@@ -60,16 +58,14 @@ class DogBuilder extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    dog.name,
+                    entry.title,
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   SizedBox(height: 4.0),
-                  Text(
-                    "breed"
-                  ),
+                  Text("breed"),
                   SizedBox(height: 4.0),
                   Row(
                     children: [
@@ -93,7 +89,7 @@ class DogBuilder extends StatelessWidget {
             ),
             SizedBox(width: 20.0),
             GestureDetector(
-              onTap: () => onEdit(dog),
+              onTap: () => onEdit(entry),
               child: Container(
                 height: 40.0,
                 width: 40.0,
@@ -107,7 +103,7 @@ class DogBuilder extends StatelessWidget {
             ),
             SizedBox(width: 20.0),
             GestureDetector(
-              onTap: () => onDelete(dog),
+              onTap: () => onDelete(entry),
               child: Container(
                 height: 40.0,
                 width: 40.0,
