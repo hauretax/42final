@@ -4,22 +4,13 @@ import 'package:diaryapp/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+
 
 const appScheme = 'flutterdiaryapp';
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
 
-  WidgetsFlutterBinding.ensureInitialized();
-// Open the database and store the reference.
-final database = openDatabase(
-  // Set the path to the database. Note: Using the `join` function from the
-  // `path` package is best practice to ensure the path is correctly
-  // constructed for each platform.
-  join(await getDatabasesPath(), 'doggie_database.db'),
-);
+
 
   runApp(MyApp());
 }

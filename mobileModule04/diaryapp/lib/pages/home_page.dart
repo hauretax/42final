@@ -27,21 +27,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Dog Database'),
+          title: const Text('Dog Database'),
           centerTitle: true,
-          bottom: TabBar(
+          bottom: const TabBar(
             tabs: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text('Dogs'),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text('Breeds'),
-              ),
+              )
             ],
           ),
         ),
@@ -70,7 +66,14 @@ class _HomePageState extends State<HomePage> {
           children: [
             FloatingActionButton(
               onPressed: () {
-                
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => DogFormPage(),
+                        fullscreenDialog: true,
+                      ),
+                    )
+                    .then((_) => setState(() {}));
               },
               heroTag: 'addBreed',
             ),
