@@ -1,16 +1,16 @@
 import 'package:diaryapp/pages/home_page.dart';
 import 'package:diaryapp/screens/login.dart';
 import 'package:diaryapp/screens/profile.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
 
-
 const appScheme = 'flutterdiaryapp';
 void main() async {
   await dotenv.load();
-
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   runApp(MyApp());
 }
@@ -73,18 +73,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Auth0 Demo',
-      home: (true)? HomePage() :Scaffold(
-        appBar: AppBar(
-          title: const Text('Auth0 Demo'),
-        ),
-        body: Center(
-          child: isBusy
-              ? const CircularProgressIndicator()
-              : _credentials != null
-                  ? Profile(logoutAction, _credentials?.user)
-                  : Login(loginAction, errorMessage),
-        ),
-      ),
+      home: (true)
+          ? HomePage()
+          : Scaffold(
+              appBar: AppBar(
+                title: const Text('Auth0 Demo'),
+              ),
+              body: Center(
+                child: isBusy
+                    ? const CircularProgressIndicator()
+                    : _credentials != null
+                        ? Profile(logoutAction, _credentials?.user)
+                        : Login(loginAction, errorMessage),
+              ),
+            ),
     );
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "730840197111",
+    "project_id": "huggo-test-10fc7",
+    "storage_bucket": "huggo-test-10fc7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730840197111:android:e7d6a8763d448e60ec70f2",
+        "android_client_info": {
+          "package_name": "com.goolge.firebase.presents.demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXY9hktMC2Oq9x-e75uilAK8Hmcv7ThGU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
