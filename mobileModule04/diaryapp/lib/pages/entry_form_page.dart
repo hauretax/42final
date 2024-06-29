@@ -1,7 +1,6 @@
 import 'package:diaryapp/common_widgets/smiley_selector.dart';
 import 'package:diaryapp/models/entry.dart';
 import 'package:diaryapp/services/database_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EntryFormPage extends StatefulWidget {
@@ -32,27 +31,27 @@ class _EntryFormPageState extends State<EntryFormPage> {
     final text = _textController.text;
     final title = _titleController.text;
 
-    // Add save code here
-    // widget.entry == null
-    //     ? await _databaseService.insertEntry(
-    //         Entry(
-    //           date: DateTime.now(),
-    //           usermail: 'tochqnge',
-    //           icon: 'tochqnge',
-    //           text: text,
-    //           title: title,
-    //         ),
-    //       )
-    //     : await _databaseService.updateEntry(
-    //         Entry(
-    //           id: widget.entry?.id,
-    //           date: DateTime.now(),
-    //           usermail: 'tochqnge',
-    //           icon: 'tochqnge',
-    //           text: text,
-    //           title: title,
-    //         ),
-    //       );
+    widget.entry == null
+        ? await _databaseService.insertEntry(
+            Entry(
+              date: DateTime.now(),
+              usermail: 'tochqnge',
+              icon: 'tochqnge',
+              text: text,
+              title: title,
+            ),
+          )
+        : await _databaseService.updateEntry(
+            widget.entry!.id!,
+            Entry(
+              id: widget.entry?.id,
+              date: DateTime.now(),
+              usermail: 'tochqnge',
+              icon: 'tochqnge',
+              text: text,
+              title: title,
+            ),
+          );
 
     Navigator.pop(context);
   }

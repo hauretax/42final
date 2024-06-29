@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Entry {
-  final int? id;
+  final String? id;
   final DateTime date;
   final String icon;
   final String text;
@@ -45,6 +45,6 @@ class Entry {
 
   @override
   String toString() {
-    return 'Dog(id: $id, usermail: $usermail, icon: $icon, text: $text, title: $title, date: $date)';
+    return 'Entry(id: $id, usermail: $usermail, icon: $icon, text: $text, title: $title, date: $date)';
   }
 }
