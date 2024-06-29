@@ -21,14 +21,26 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isBusy = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String errorMessage = '';
   User? _user;
 
   @override
+  void initState() {
+    super.initState();
+    // Écoute des changements d'état d'authentification
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Firebase Auth Demo',
-        home: _user != null ? HomePage() : LoginPage());
+      title: 'Firebase Auth Demo',
+      home: _user != null ? HomePage(user: _user!) : LoginPage(),
+    );
   }
 }
