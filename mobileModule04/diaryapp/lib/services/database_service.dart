@@ -10,12 +10,11 @@ class DatabaseService {
     String id = uuid.v1();
 
     DatabaseReference notesRef = ref.child("notes");
-    final data = entry.toMap();
-
+    var data = entry.toMap(id);
     await notesRef.child(id).set(data);
   }
 
-  Future<Entry?> getEntry(String id) async {
+  Future<Entry?> getEntryById(String id) async {
     DatabaseReference notesRef = ref.child("notes").child(id);
     DatabaseEvent event = await notesRef.once();
 
@@ -27,6 +26,24 @@ class DatabaseService {
     return null;
   }
 
+  Future<List<Entry>> getEntriesByUserUid(String userUid) async {
+    DatabaseReference notesRef = ref.child("notes");
+    Query query = notesRef.orderByChild("userUid").equalTo(userUid);
+    DatabaseEvent event = await query.once();
+
+    if (event.snapshot.exists) {
+      Map<String, dynamic> notesData =
+          Map<String, dynamic>.from(event.snapshot.value as Map);
+
+      List<Entry> userEntries = notesData.values
+          .map((entryData) =>
+              Entry.fromMap(Map<String, dynamic>.from(entryData)))
+          .toList();
+      return userEntries;
+    }
+    return [];
+  }
+
   Future<void> deleteEntry(String id) async {
     DatabaseReference notesRef = ref.child("notes").child(id);
     await notesRef.remove();
@@ -34,7 +51,7 @@ class DatabaseService {
 
   Future<void> updateEntry(String id, Entry entry) async {
     DatabaseReference notesRef = ref.child("notes").child(id);
-    final data = entry.toMap();
+    final data = entry.toMap(id);
 
     await notesRef.update(data);
   }

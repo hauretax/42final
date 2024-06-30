@@ -2,20 +2,10 @@ import 'package:flutter/material.dart';
 
 List<String> dailyFeelings = [
   '😊', // Joie
-  '😄', // Bonne humeur
-  '😍', // Amour
-  '😎', // Confiance
-  '🥳', // Excitation
-  '😇', // Satisfaction
   '😂', // Amusement
   '😔', // Tristesse
-  '😟', // Inquiétude
-  '😕', // Confusion
   '😠', // Colère
   '😴', // Fatigue
-  '😞', // Déception
-  '😕', // Perplexité
-  '🤔', // Réflexion
 ];
 
 class SmileySelector extends StatefulWidget {
@@ -37,14 +27,13 @@ class _SmileySelectorState extends State<SmileySelector> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         const Text(
-          'Comment vous sentez-vous aujourd\'hui ?',
+          'how feels the day ?',
           style: TextStyle(fontSize: 20),
         ),
         Text(
           selectedSmiley,
           style: const TextStyle(fontSize: 50),
         ),
-        const SizedBox(height: 20),
         Wrap(
           spacing: 10,
           runSpacing: 10,

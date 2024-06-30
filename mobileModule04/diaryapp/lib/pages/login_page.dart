@@ -15,7 +15,9 @@ class _LoginPage extends State<LoginPage> {
 
   void _handleGithubSignIn() async {
     GithubAuthProvider githubProvider = GithubAuthProvider();
-
+    setState(() {
+      loading = true;
+    });
     try {
       await FirebaseAuth.instance.signInWithProvider(githubProvider);
       setState(() {
@@ -45,8 +47,7 @@ class _LoginPage extends State<LoginPage> {
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+        await FirebaseAuth.instance.signInWithCredential(credential);
         setState(() {
           loading = false;
         });
@@ -60,9 +61,6 @@ class _LoginPage extends State<LoginPage> {
   }
 
   Widget _signInButtons() {
-    setState(() {
-      loading = true;
-    });
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -87,7 +85,9 @@ class _LoginPage extends State<LoginPage> {
       appBar: AppBar(
         title: const Text("Sign In"),
       ),
-      body: loading ? CircularProgressIndicator() : _signInButtons(),
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : _signInButtons(),
     );
   }
 }

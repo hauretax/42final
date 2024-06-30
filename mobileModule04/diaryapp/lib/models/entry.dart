@@ -6,21 +6,21 @@ class Entry {
   final String icon;
   final String text;
   final String title;
-  final String usermail;
+  final String userUid;
 
   Entry({
     this.id,
-    required this.usermail,
+    required this.userUid,
     required this.icon,
     required this.text,
     required this.title,
     required this.date,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(String uid) {
     return {
-      'id': id,
-      'usermail': usermail,
+      'id': uid,
+      'userUid': userUid,
       'icon': icon,
       'text': text,
       'title': title,
@@ -30,21 +30,22 @@ class Entry {
 
   factory Entry.fromMap(Map<String, dynamic> map) {
     return Entry(
-      id: map['id']?.toInt() ?? 0,
-      usermail: map['usermail'] ?? '',
+      id: map['id'] ?? '',
+      userUid: map['userUid'] ?? '',
       icon: map['icon'] ?? '',
       text: map['text'] ?? '',
       title: map['title'] ?? '',
-      date: map['date'] ?? '',
+      date: DateTime.parse(map['date']),
     );
   }
 
-  String toJson() => json.encode(toMap());
 
   factory Entry.fromJson(String source) => Entry.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'Entry(id: $id, usermail: $usermail, icon: $icon, text: $text, title: $title, date: $date)';
+    return 'Entry(id: $id, userUid: $userUid, icon: $icon, text: $text, title: $title, date: $date)';
   }
+
+
 }
