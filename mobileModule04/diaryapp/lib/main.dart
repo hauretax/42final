@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

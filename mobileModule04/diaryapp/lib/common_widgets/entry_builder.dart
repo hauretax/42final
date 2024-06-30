@@ -57,15 +57,17 @@ class EntryBuilder extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(entry.icon),
                 ),
-                const SizedBox(width: 20.0),
-                Text(
-                  entry.title,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    entry.title,
+                    // overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                SizedBox(width: 20.0),
                 Expanded(
                   child: Column(children: [
                     Text(
@@ -91,7 +93,6 @@ class EntryBuilder extends StatelessWidget {
                     )
                   ]),
                 ),
-                SizedBox(width: 20.0),
                 GestureDetector(
                   onTap: () => onDelete(entry),
                   child: Container(

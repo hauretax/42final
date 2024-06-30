@@ -4,9 +4,10 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPage createState() => _LoginPage();
 }
 
@@ -20,15 +21,16 @@ class _LoginPage extends State<LoginPage> {
     });
     try {
       await FirebaseAuth.instance.signInWithProvider(githubProvider);
+
       setState(() {
         loading = false;
       });
     } catch (e) {
       print('Failed to sign in with GitHub: $e');
-      setState(() {
-        loading = false;
-      });
     }
+    setState(() {
+      loading = false;
+    });
   }
 
   void _handleGoogleSignIn() async {
@@ -51,13 +53,17 @@ class _LoginPage extends State<LoginPage> {
         setState(() {
           loading = false;
         });
-      } else {}
+      } else {
+        setState(() {
+          loading = false;
+        });
+      }
     } catch (error) {
       print(error);
-      setState(() {
-        loading = false;
-      });
     }
+    setState(() {
+      loading = false;
+    });
   }
 
   Widget _signInButtons() {

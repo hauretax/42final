@@ -26,9 +26,9 @@ class DatabaseService {
     return null;
   }
 
-  Future<List<Entry>> getEntriesByUserUid(String userUid) async {
+  Future<List<Entry>> getEntriesByUserTag(String userTag) async {
     DatabaseReference notesRef = ref.child("notes");
-    Query query = notesRef.orderByChild("userUid").equalTo(userUid);
+    Query query = notesRef.orderByChild("userUid").equalTo(userTag);
     DatabaseEvent event = await query.once();
 
     if (event.snapshot.exists) {

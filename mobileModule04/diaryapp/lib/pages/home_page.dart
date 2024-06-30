@@ -7,18 +7,29 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
-
-  HomePage({Key? key, required this.user}) : super(key: key);
-
+  const HomePage({super.key, required this.user});
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   final DatabaseService _databaseService = DatabaseService();
+  late final String _userTag;
+
+  @override
+  void initState() {
+    super.initState();
+    _userTag = widget.user.email != null && widget.user.email != ''
+        ? widget.user.email!
+        : (widget.user.providerData[0].email != null &&
+                widget.user.providerData[0].email != ''
+            ? widget.user.providerData[0].email!
+            : widget.user.displayName!);
+  }
 
   Future<List<Entry>> _getEntrys() async {
-    List<Entry> entries = await _databaseService.getEntriesByUserUid(widget.user.uid);
+    List<Entry> entries = await _databaseService.getEntriesByUserTag(_userTag);
     return entries;
   }
 
@@ -62,8 +73,8 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context)
                       .push(
                         MaterialPageRoute(
-                          builder: (_) => EntryFormPage(
-                              userUid: widget.user.uid, entry: value),
+                          builder: (_) =>
+                              EntryFormPage(userUid: _userTag, entry: value),
                           fullscreenDialog: true,
                         ),
                       )
@@ -79,7 +90,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.of(context)
                 .push(
                   MaterialPageRoute(
-                    builder: (_) => EntryFormPage(userUid: widget.user.uid),
+                    builder: (_) => EntryFormPage(userUid: _userTag),
                     fullscreenDialog: true,
                   ),
                 )
