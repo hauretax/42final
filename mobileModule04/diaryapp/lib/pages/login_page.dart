@@ -4,7 +4,9 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  bool loading;
+  final Function(bool) setLoading;
+  LoginPage({required this.loading, required this.setLoading, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -12,31 +14,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  bool loading = false;
-
   void _handleGithubSignIn() async {
     GithubAuthProvider githubProvider = GithubAuthProvider();
-    setState(() {
-      loading = true;
-    });
+
+    widget.setLoading(true);
+
     try {
       await FirebaseAuth.instance.signInWithProvider(githubProvider);
 
-      setState(() {
-        loading = false;
-      });
+      widget.setLoading(false);
     } catch (e) {
       print('Failed to sign in with GitHub: $e');
     }
-    setState(() {
-      loading = false;
-    });
+    widget.setLoading(false);
   }
 
   void _handleGoogleSignIn() async {
-    setState(() {
-      loading = true;
-    });
+    widget.setLoading(true);
     try {
       GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -50,20 +44,14 @@ class _LoginPage extends State<LoginPage> {
           idToken: googleAuth.idToken,
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
-        setState(() {
-          loading = false;
-        });
+        widget.setLoading(false);
       } else {
-        setState(() {
-          loading = false;
-        });
+        widget.setLoading(false);
       }
     } catch (error) {
       print(error);
     }
-    setState(() {
-      loading = false;
-    });
+    widget.setLoading(false);
   }
 
   Widget _signInButtons() {
@@ -91,7 +79,7 @@ class _LoginPage extends State<LoginPage> {
       appBar: AppBar(
         title: const Text("Sign In"),
       ),
-      body: loading
+      body: widget.loading
           ? const Center(child: CircularProgressIndicator())
           : _signInButtons(),
     );

@@ -24,8 +24,12 @@ class _MyAppState extends State<MyApp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String errorMessage = '';
   User? _user;
-
-  
+  bool loading = false;
+  setLoading(bool load) {
+    setState(() {
+      loading = load;
+    });
+  }
 
   @override
   void initState() {
@@ -46,7 +50,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Firebase Auth Demo',
-      home: _user != null ? HomePage(user: _user!) : LoginPage(),
+      home: _user != null
+          ? HomePage(user: _user!)
+          : LoginPage(
+              loading: loading,
+              setLoading: setLoading,
+            ),
     );
   }
 }
