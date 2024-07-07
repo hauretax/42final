@@ -38,7 +38,7 @@ class _EntryFormPageState extends State<EntryFormPage> {
   }
 
   Future<void> _onSave() async {
-    if (widget.isEditable) {
+    if (!widget.isEditable) {
       Navigator.of(context).pop("data");
       return;
     }
