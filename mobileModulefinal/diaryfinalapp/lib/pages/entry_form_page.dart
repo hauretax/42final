@@ -59,7 +59,7 @@ class _EntryFormPageState extends State<EntryFormPage> {
             ),
           );
 
-    Navigator.pop(context);
+    Navigator.of(context).pop("data");
   }
 
   @override

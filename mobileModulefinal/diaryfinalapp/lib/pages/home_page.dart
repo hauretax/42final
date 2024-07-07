@@ -1,4 +1,6 @@
 import 'package:diaryfinalapp/models/entry.dart';
+import 'package:diaryfinalapp/pages/calendar_landscape_page.dart';
+import 'package:diaryfinalapp/pages/calendar_page.dart';
 import 'package:diaryfinalapp/pages/entry_form_page.dart';
 import 'package:diaryfinalapp/services/database_service.dart';
 import 'package:diaryfinalapp/widget/feeling_view.dart';
@@ -14,7 +16,8 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  late TabController _tabController;
   final DatabaseService _databaseService = DatabaseService();
   late final String _userTag;
   int _nbrOfEntries = 0;
@@ -23,6 +26,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    _tabController = TabController(length: 2, vsync: this);
     _userTag = widget.user.email != null && widget.user.email != ''
         ? widget.user.email!
         : (widget.user.providerData[0].email != null &&
@@ -30,6 +35,12 @@ class _HomePageState extends State<HomePage> {
             ? widget.user.providerData[0].email!
             : widget.user.displayName!);
     _updateAll();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<List<Entry>> _getEntrys() async {
@@ -54,6 +65,19 @@ class _HomePageState extends State<HomePage> {
     await FirebaseAuth.instance.signOut();
   }
 
+  Future<void> _navigateAndDisplaySelected(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EntryFormPage(
+          userUid: _userTag,
+        ),
+      ),
+    );
+
+    _updateAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -61,49 +85,62 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            TextButton(onPressed: _signOut, child: Text("logout")),
+            TextButton(onPressed: _signOut, child: const Text("logout")),
           ],
           title: Row(
             children: [Text('Welcom ${widget.user.displayName}')],
           ),
           centerTitle: true,
-          bottom: TabBar(
-            tabs: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text('Entrys (${_nbrOfEntries.toString()})'),
-              )
+        ),
+        body: TabBarView(controller: _tabController, children: [
+          Column(
+            children: [
+              Expanded(
+                child: LastEntry(
+                  userTag: _userTag,
+                  onDelete: _onEntryDelete,
+                  updateAll: _updateAll,
+                ),
+              ),
+              Expanded(
+                child: feelingView(_entries),
+              ),
             ],
           ),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: LastEntry(
-                userTag: _userTag,
-                onDelete: _onEntryDelete,
-              ),
-            ),
-            Expanded(
-              child: feelingView(_entries),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            List<Entry> entries;
-            final updatedEntries = await Navigator.of(context)
-                .push(
-                  MaterialPageRoute(
-                    builder: (_) => EntryFormPage(
-                      userUid: _userTag,
+          OrientationBuilder(builder: (context, orientation) {
+            bool isLandscape = orientation == Orientation.landscape;
+            return Scaffold(
+              body: isLandscape
+                  ? CalendarLandscapePage(
+                      entries: _entries,
+                      updateAll: _updateAll,
+                      userTag: _userTag,
+                      onDelete: _onEntryDelete,
+                    )
+                  : CalendarPage(
+                      entries: _entries,
+                      updateAll: _updateAll,
+                      userTag: _userTag,
+                      onDelete: _onEntryDelete,
                     ),
-                    fullscreenDialog: true,
-                  ),
-                )
-                .then((_) => _updateAll());
+            );
+          })
+        ]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _navigateAndDisplaySelected(context);
           },
           child: const Icon(Icons.add),
+        ),
+        bottomNavigationBar: TabBar(
+          controller: _tabController,
+          tabs: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(Icons.note_alt_outlined),
+              Text('$_nbrOfEntries'),
+            ]),
+            const Icon(Icons.date_range),
+          ],
         ),
       ),
     );

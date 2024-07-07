@@ -1,4 +1,3 @@
-import 'package:diaryfinalapp/common_widgets/smiley_selector.dart';
 import 'package:diaryfinalapp/models/entry.dart';
 import 'package:flutter/material.dart';
 

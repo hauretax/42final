@@ -5,11 +5,13 @@ import 'package:diaryfinalapp/services/database_service.dart';
 import 'package:flutter/material.dart';
 
 class LastEntry extends StatefulWidget {
-  final userTag;
+  final String userTag;
+  final Function() updateAll;
   final Function(Entry) onDelete;
   const LastEntry(
       {required this.userTag,
       required this.onDelete,
+      required this.updateAll,
       Key? key})
       : super(key: key);
 
@@ -25,11 +27,6 @@ class _LastEntryState extends State<LastEntry> {
     List<Entry> fullEntries =
         await _databaseService.getEntriesByUserTag(_userTag);
     return fullEntries;
-  }
-
-  Future<void> _onDeleteEntryFromTop(Entry entry) async {
-    await _databaseService.deleteEntryFromTop(entry.id!);
-    setState(() {});
   }
 
   @override
@@ -51,7 +48,7 @@ class _LastEntryState extends State<LastEntry> {
                       fullscreenDialog: true,
                     ),
                   )
-                  .then((_) => setState(() {}));
+                  .then((_) => {setState(() {}), widget.updateAll()});
             }
           },
         ),
