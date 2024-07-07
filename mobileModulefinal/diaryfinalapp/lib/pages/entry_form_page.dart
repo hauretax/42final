@@ -4,11 +4,15 @@ import 'package:diaryfinalapp/services/database_service.dart';
 import 'package:flutter/material.dart';
 
 class EntryFormPage extends StatefulWidget {
-  final String userUid;
   const EntryFormPage(
-      {required this.userUid, this.onDelete, super.key, this.entry});
+      {required this.userUid,
+      required this.isEditable,
+      this.onDelete,
+      super.key,
+      this.entry});
   final Entry? entry;
-
+  final String userUid;
+  final bool isEditable;
   final Function(Entry)? onDelete;
 
   @override
@@ -34,6 +38,11 @@ class _EntryFormPageState extends State<EntryFormPage> {
   }
 
   Future<void> _onSave() async {
+    if (widget.isEditable) {
+      Navigator.of(context).pop("data");
+      return;
+    }
+
     final text = _textController.text;
     final title = _titleController.text;
 
@@ -77,42 +86,55 @@ class _EntryFormPageState extends State<EntryFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter name of the entry here',
-                ),
-              ),
+              widget.isEditable
+                  ? TextField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter name of the entry here',
+                      ),
+                    )
+                  : Text(widget.entry!.title),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: _textController,
-                minLines: 5,
-                maxLines: null,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter note of moment here',
-                ),
-              ),
+              widget.isEditable
+                  ? TextField(
+                      controller: _textController,
+                      minLines: 5,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter note of moment here',
+                      ),
+                    )
+                  : Text(widget.entry!.text),
               const SizedBox(height: 24.0),
-              SmileySelector(
-                smiley: _smiley,
-                onSmileySelected: (smiley) {
-                  setState(() {
-                    _smiley = smiley;
-                  });
-                },
-              ),
+              widget.isEditable
+                  ? SmileySelector(
+                      smiley: _smiley,
+                      onSmileySelected: (smiley) {
+                        setState(() {
+                          _smiley = smiley;
+                        });
+                      },
+                    )
+                  : Text(widget.entry!.icon),
               SizedBox(
                 height: 45.0,
                 child: ElevatedButton(
                   onPressed: _onSave,
-                  child: const Text(
-                    'Save the Entry data',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  ),
+                  child: widget.isEditable
+                      ? const Text(
+                          'Save the Entry data',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        )
+                      : const Text(
+                          'close',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 24.0),

@@ -41,6 +41,7 @@ class _LastEntryState extends State<LastEntry> {
                   .push(
                     MaterialPageRoute(
                       builder: (_) => EntryFormPage(
+                        isEditable: true,
                         userUid: _userTag,
                         entry: value,
                         onDelete: widget.onDelete,

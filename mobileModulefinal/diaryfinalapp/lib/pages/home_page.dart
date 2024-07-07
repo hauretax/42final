@@ -70,6 +70,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       context,
       MaterialPageRoute(
         builder: (context) => EntryFormPage(
+          isEditable: true,
           userUid: _userTag,
         ),
       ),

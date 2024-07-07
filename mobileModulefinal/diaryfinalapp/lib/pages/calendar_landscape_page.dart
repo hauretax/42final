@@ -121,6 +121,7 @@ class _CalendarLandscapePageState extends State<CalendarLandscapePage> {
                                 .push(
                                   MaterialPageRoute(
                                     builder: (_) => EntryFormPage(
+                                      isEditable: false,
                                       userUid: widget.userTag,
                                       entry: entry,
                                       onDelete: widget.onDelete,
